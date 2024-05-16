@@ -1,5 +1,4 @@
-import { combineReducers, createSlice } from '@reduxjs/toolkit';
-
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   products: [],
@@ -13,62 +12,58 @@ export const productSlice = createSlice({
   initialState,
   reducers: {
     updateTotalItems(state, action) {
-      state.totalItems = action.payload;
+      state.total = action.payload;
     },
-  addItem: (state, action) => {
-    const newItem = action.payload;
-    const existingItem = state.products.find(item => item.id === newItem.id);
 
-    if (existingItem) {
+    addItem(state, action) {
+      const newItem = action.payload;
+      const existingItem = state.products.find(item => item.id === newItem.id);
+
+      if (existingItem) {
+        existingItem.amount++;
+      } else {
+        state.products.push({ ...newItem, amount: 1 });
+      }
+      calculateTotal(state);
+    },
     
-      existingItem.amount++;
-    } else {
-     
-      state.products.push({ ...newItem, amount: 1 });
-    }
-    state.total = state.products.reduce((acc, item) => acc + item.amount, 0);
-    state.subtotal = state.products.reduce((acc, item) => acc + item.price * item.amount, 0);
-  
-  },
-    
-    increaseAmount: (state, { payload }) => {
+    increaseAmount(state, { payload }) {
       const item = state.products.find((product) => product.id === payload);
       if (item) {
         item.amount += 1;
-        productSlice.caseReducers.calculateTotal(state);
+        calculateTotal(state);
       }
     },
     
-    decreaseAmount: (state, { payload }) => {
+    decreaseAmount(state, { payload }) {
       const item = state.products.find((product) => product.id === payload);
-      if (item) {
+      if (item && item.amount > 0) {
         item.amount -= 1;
-        productSlice.caseReducers.calculateTotal(state);
+        calculateTotal(state);
       }
     },
 
-   removeItem:(state, {payload})=>{
-    productSlice.caseReducers.calculateTotal(state)
-   },
-
-   calculateTotal: (state) => {
-    let price = 0;
-    let total = 0;
-  
-    state.products.forEach((product) => {
-      total += product.amount;
-      price += product.amount * product.price;
-    });
-  
-    state.price = price;
-    state.total = total;
-  },
-  
+    removeItem(state, { payload }) {
+      state.products = state.products.filter(item => item.id !== payload);
+      calculateTotal(state);
+    },
   }
 });
 
-
-export const { addItem, decreaseAmount, increaseAmount, calculateTotal, removeItem, updateTotalItems } = productSlice.actions;
-
+export const { addItem, decreaseAmount, increaseAmount, removeItem, updateTotalItems } = productSlice.actions;
 
 export default productSlice.reducer;
+
+// Function to calculate total and subtotal
+const calculateTotal = (state) => {
+  let price = 0;
+  let total = 0;
+
+  state.products.forEach((product) => {
+    total += product.amount;
+    price += product.amount * product.price;
+  });
+
+  state.price = price;
+  state.total = total;
+};

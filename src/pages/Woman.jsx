@@ -1,8 +1,12 @@
 import React from 'react'
+import Navbar from '../components/Navbar'
 
 function Woman() {
   return (
-    <div>Woman</div>
+    <div>
+      <Navbar/>
+      <h1 className='align-content'>Woman</h1>
+    </div>
   )
 }
 

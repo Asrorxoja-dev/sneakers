@@ -3,6 +3,7 @@ import image2 from '../assets/image-product-2.jpg'
 import image3 from '../assets/image-product-3.jpg'
 import image4 from '../assets/image-product-4.jpg'
 import product from '../assets/icon-cart.svg'
+import close from '../assets/icon-close.svg'
 import thumnail1 from '../assets/image-product-1-thumbnail.jpg'
 import thumnail2 from '../assets/image-product-2-thumbnail.jpg'
 import thumnail3 from '../assets/image-product-3-thumbnail.jpg'
@@ -11,13 +12,16 @@ import { useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid';
 import toast from 'react-hot-toast'
 import { useDispatch, useSelector } from 'react-redux'
-import { addItem, increaseAmount, decreaseAmount, removeItem , updateTotalItems} from '../../features/productSlice'
+import { addItem, increaseAmount,  decreaseAmount, updateTotalItems, removeItem} from '../../features/productSlice'
 
 function Hero() {
   const productsInStore = useSelector((state) => state.products.products);
-  console.log(productsInStore);
   const dispatch = useDispatch();
-
+  const {total, products, price, amount } =useSelector((store)=> store.products)
+  const handleRemove = () => {
+    const id = products[0].id;
+    dispatch(removeItem(id));
+  };
   useEffect(() => {
     const totalAmount = productsInStore.reduce((total, product) => total + product.amount, 0);
     dispatch(updateTotalItems(totalAmount));
@@ -28,7 +32,7 @@ function Hero() {
   
 
   const handleIncrease = (productId) => {
-    dispatch(increaseAmount(productId));
+    dispatch(addItem({ id: uuidv4(), price: 125.00 }));
      
   };
 
@@ -36,10 +40,8 @@ function Hero() {
     dispatch(decreaseAmount(productId));
   };
 
-  const handleRemove = (productId) => {
-    dispatch(removeItem(productId));
-  };
-
+  
+ 
   const handleAddToCart = () => {
     dispatch(addItem({ id: uuidv4(), price: 125.00 }));
     toast.success("item succesfully added")
@@ -55,13 +57,15 @@ function Hero() {
         <img
         onClick={()=>document.getElementById('my_modal_3').showModal()}
             src={image1}
-            className="w-80 h-80 object-cover rounded-lg lg:w-full"
+            className="w-80 h-80 object-cover cursor-pointer rounded-lg lg:w-full"
           />
 <dialog id="my_modal_3" className="modal">
   <div className="modal-box">
     <form method="dialog">
       
-      <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-0 ">✕</button>
+      <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-0 ">
+        <img src={close} alt="" />
+      </button>
     </form>
     <div className="carousel w-full">
   <div id="slide1" className="carousel-item relative w-full">
@@ -115,13 +119,13 @@ function Hero() {
           <p className='line-through text-slate-400 mt-3'>$250.00</p>
           <div className='flex mt-16 gap-10 items-center'>
             <div className="card-actions bg-slate-200 px-5 rounded items-center">
-              <button className='text-2xl text-orange-600 font-bold' onClick={() => handleDecrease(product)}>-</button>
+              <button className='text-2xl text-orange-600 font-bold' onClick={() => handleRemove(product)}>-</button>
               <button className="btn text-3xl btn-ghost">{totalAmount}</button>
               <button className='text-3xl w-4  text-orange-600 font-bold' onClick={() => handleIncrease(product)}>+</button>
             </div>
             <div>
               <button className="btn px-10 btn-warning bg-orange-500 text-white hover">
-                <img className='w-4 ' src={product} alt="" onClick={()=>handleAddToCart()} /> Add to cart
+                <img className='w-4 h-4  ' src={product} alt="" onClick={()=>handleAddToCart()} /> Add to cart
               </button>
             </div>
           </div>

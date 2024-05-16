@@ -1,8 +1,12 @@
 import React from 'react'
+import Navbar from '../components/Navbar'
 
 function Contact() {
   return (
-    <div>Contact</div>
+    <div>
+      <Navbar/>
+      <h1 className='align-content'>Contact</h1>
+    </div>
   )
 }
 
